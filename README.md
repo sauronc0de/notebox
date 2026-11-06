@@ -1,45 +1,52 @@
+<div align="center">
+
 # Notebox
 
-Aplicació personal de notes, mobile-first. Backend C++17 + cpp-httplib (header versionat), nlohmann/json, SQLite amb FTS5; frontend HTML/CSS/JS sense framework. API i UI separades. Sense autenticació integrada: **no exposis el port a Internet**.
+**Self-hosted notes & reminders. One C++ binary, one SQLite file, zero frameworks.**
 
-## Estructura
+![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C?logo=cplusplus&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-FTS5-003B57?logo=sqlite&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?logo=pwa&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-- `src/main.cpp`: servidor HTTP, repositori SQLite, validació i migració v1.
-- `third_party/httplib.h`: cpp-httplib 0.18.7 (MIT, https://github.com/yhirose/cpp-httplib).
-- `web/`: frontend responsive, icones SVG predefinides (carpeta, feina, casa, tecnologia, estrella, llibre, idea, gaming, futbol, barra de peses, alimentació, regals i gats).
-- `data/`: SQLite local (ignorada per Git); `build/`: artefactes (ignorats).
+</div>
 
-## Instal·lació (Debian / Raspberry Pi OS)
+---
+
+Notebox is a mobile-first notes app served by a single C++17 executable. The backend is ~500 lines of plain C++ on top of [cpp-httplib](https://github.com/yhirose/cpp-httplib), [nlohmann/json](https://github.com/nlohmann/json) and SQLite. The frontend is vanilla HTML/CSS/JS, installable as a PWA.
+
+## Features
+
+- **Instant search**: SQLite FTS5 full-text search with prefix matching as you type.
+- **Agenda**: dated notes become reminders, with a weekly strip, overdue and upcoming lists.
+- **Markdown-lite**: checklists, lists, headings, quotes, bold, code and links.
+- **Offline-ready**: a service worker keeps the last snapshot available when the server is down.
+
+## Build
 
 ```sh
 sudo apt-get install cmake g++ libsqlite3-dev nlohmann-json3-dev
-cmake -S . -B build
-cmake --build build -j1
-NOTEBOX_HOST=127.0.0.1 ./build/notebox
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j"$(nproc)"
 ```
 
-En una Raspberry Pi amb poca RAM, evita inicialment `Release -j2`: compilar nlohmann/json i cpp-httplib pot consumir molta memòria. Des de l'arrel del projecte obre `http://127.0.0.1:8080`. Variables: `NOTEBOX_HOST`, `NOTEBOX_PORT` (8080), `NOTEBOX_DATA` (`./data`), `NOTEBOX_WEB` (`./web`). Per Tailnet, vincula el servei **només a la IP Tailscale** (obtinguda amb `tailscale ip -4`):
+## Run
 
 ```sh
-NOTEBOX_HOST="$(tailscale ip -4)" ./build/notebox
+./build/notebox
 ```
 
-Accedeix a `http://<MagicDNS-o-IP-Tailscale>:8080` des de dispositius autoritzats. Configura ACL de Tailscale per restringir el port; la xarxa privada no substitueix l'autenticació contra altres membres de la Tailnet. No facis servir `0.0.0.0` si només vols accés privat. Per HTTPS, considera Tailscale Serve. En aquesta Raspberry Pi hi ha `/etc/systemd/system/notebox.service`, habilitat amb `WorkingDirectory=/home/pi/workspace/notebox` i `NOTEBOX_HOST=100.125.179.24`. Usa `sudo systemctl restart notebox` després de recompilar i `sudo systemctl status notebox` per consultar-ne l'estat. Si canvia la IP Tailscale, actualitza `NOTEBOX_HOST` al servei, fes `sudo systemctl daemon-reload` i reinicia'l.
+Open `http://127.0.0.1:8080`. Configure with `NOTEBOX_HOST`, `NOTEBOX_PORT`, `NOTEBOX_DATA` and `NOTEBOX_WEB`.
 
-## API
-
-`GET /api/notes` amb paràmetres combinables `date=YYYY-MM-DD`, `tag=nom`, `group=nom`, `pinned=true|false`, `has_date=true|false`, `search=paraules`, `sort=updated|created|date|title`; `GET /api/search` accepta els mateixos paràmetres. Resultat limitat a 200 notes per consulta en aquesta primera versió (paginació pendent).
-
-`GET /api/notes/:id`, `POST /api/notes`, `PUT /api/notes/:id`, `DELETE /api/notes/:id`; `GET /api/tags`, `GET /api/groups`, `POST /api/groups`, `PUT /api/groups/:id` (nom i icona). PUT de notes reemplaça tots els camps editables. Tags a l'API són noms; els IDs reutilitzables es gestionen internament. Les dates són independents de pinned.
+To install it as a systemd service published on your Tailnet:
 
 ```sh
-curl -X POST http://127.0.0.1:8080/api/notes -H 'Content-Type: application/json' \
-  -d '{"title":"Provar RS485","description":"Raspberry ethernet","date":null,"tags":["work","rs485"],"group_id":null,"pinned":false}'
-curl 'http://127.0.0.1:8080/api/notes?search=raspberry%20ethernet&tag=work'
+sudo ./install-service.sh
 ```
 
-## Dades i evolució
+> [!WARNING]
+> Notebox has no authentication. Keep it on localhost or behind a private network such as Tailscale.
 
-La migració v1 és transaccional i es controla amb `PRAGMA user_version`. `notes`, `tags`, `note_tags`, `groups`; les claus externes són actives. FTS5 (`note_fts`) replica títol, descripció i tags amb triggers; els termes de cerca es combinen amb AND i poden coincidir en camps diferents. La cerca actual és literal per termes (sense prefix ni sintaxi avançada), ordenada per últim canvi; ranking, paginació i tokenització es poden ampliar. Per una migració v2, afegeix un bloc transaccional condicionat a `user_version == 1` i incrementa la versió. Fes còpia del fitxer SQLite amb l'API de backup de SQLite o `VACUUM INTO` (amb el servei aturat també pots copiar els fitxers WAL). Els attachments futurs haurien de tenir taula pròpia i fitxers optimitzats al disc; no inclosos en aquesta versió.
+## License
 
-Els grups es poden crear i editar des de «Grups» a Totes les notes o des de l'editor; eliminar-los, l'autenticació, les imatges i el mode offline/PWA queden fora del MVP. El Daily accepta gestos horitzontals per canviar de dia (a més dels botons). Les notes noves no tenen data per defecte; «Aquest dia» l'assigna expressament i «Sense data» l'esborra.
+[MIT](LICENSE) © sauronc0de
