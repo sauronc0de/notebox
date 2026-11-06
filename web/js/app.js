@@ -216,7 +216,7 @@ function reminderPill(note, { withDate = false } = {}) {
   const when = relDay(note.date, state.today);
   if (note.done) return el('span', { class: 'pill green' }, icon('i-check'), withDate ? fmtShort(note.date) : 'Fet');
   if (diff < 0) return el('span', { class: 'pill red' }, icon('i-clock'), `Endarrerit · ${when}`);
-  if (diff === 0) return el('span', { class: 'pill amber' }, icon('i-clock'), 'Avui');
+  if (diff === 0) return el('span', { class: 'pill warn' }, icon('i-clock'), 'Avui');
   return el('span', { class: 'pill cyan' }, icon('i-clock'), diff === 1 ? 'Demà' : fmtShort(note.date));
 }
 
@@ -389,8 +389,8 @@ function renderAgenda() {
   const out = [];
   if (overdue.length) out.push(section('Endarrerits', overdue.length, el('div', { class: 'rem-list' }, overdue.map(n => reminderRow(n, 'overdue'))), { tone: 'red' }));
   const isToday = day === state.today;
-  const head = el('header', { class: 'sec-head amber' }, el('h2', { class: 'label day-title' }, fmtLong(day),
-    el('span', { class: 'pill ' + (isToday ? 'amber' : 'cyan'), text: relDay(day, state.today) })),
+  const head = el('header', { class: 'sec-head warn' }, el('h2', { class: 'label day-title' }, fmtLong(day),
+    el('span', { class: 'pill ' + (isToday ? 'warn' : 'cyan'), text: relDay(day, state.today) })),
     el('button', { type: 'button', class: 'btn ghost sm', 'aria-label': 'Afegeix un recordatori', on: { click: () => openEditor(null, { date: day }) } }, icon('i-plus'), el('span', { class: 't', text: 'Afegeix' })));
   out.push(el('section', { class: 'sec' }, head, items.length
     ? el('div', { class: 'rem-list' }, items.map(n => reminderRow(n, 'day')))
@@ -450,7 +450,7 @@ function renderExplore() {
   const stat = (value, label, tone, fn) => el('button', { type: 'button', class: 'stat ' + tone, on: { click: fn } }, el('b', { text: String(value).padStart(2, '0') }), el('span', { text: label }));
   $('stats').replaceChildren(
     stat(s.total, 'Notes', '', () => { resetFilters(); go('notes'); }),
-    stat(s.pending, 'Pendents', s.overdue ? 'red' : 'amber', () => { state.agenda.day = state.today; go('agenda'); }),
+    stat(s.pending, 'Pendents', s.overdue ? 'red' : 'warn', () => { state.agenda.day = state.today; go('agenda'); }),
     stat(s.upcoming, 'Propers', 'violet', () => { state.agenda.day = state.today; go('agenda'); }),
     stat(s.archived, 'Arxivades', 'green', () => applyFilter({ archived: 'true', group: '', tag: '' })));
 
