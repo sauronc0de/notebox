@@ -1,45 +1,84 @@
 # Notebox
 
-Aplicació personal de notes, mobile-first. Backend C++17 + cpp-httplib (header versionat), nlohmann/json, SQLite amb FTS5; frontend HTML/CSS/JS sense framework. API i UI separades. Sense autenticació integrada: **no exposis el port a Internet**.
+Aplicació personal de notes i recordatoris, pensada sobretot per al mòbil. Backend en C++17 (cpp-httplib, nlohmann/json, SQLite amb FTS5) i frontend HTML/CSS/JS sense framework, instal·lable com a PWA. No té autenticació pròpia: **no exposis el port a Internet**. Publica-la només a la teva Tailnet.
+
+## Com funciona
+
+- **Notes**: és la vista principal. Té cerca de text complet que troba resultats mentre escrius (per prefix), xips de grup i un full de filtres (etiqueta, amb o sense recordatori, arxivades, ordre). Quan no hi ha cap filtre, les notes fixades surten a dalt.
+- **Agenda**: aquí surten les notes amb data, que fan de recordatoris. Té una tira setmanal (es pot fer lliscar), els recordatoris endarrerits, els del dia seleccionat i els propers. Es poden marcar com a fets.
+- **Avís de pendents**: hi ha un comptador a la campana, a la pestanya Agenda, al títol de la pestanya i a la icona de l'app instal·lada (Badging API). També surt una franja d'avís a Notes i un toast un cop per sessió.
+- **Explora**: estadístiques, grups (crear, editar, eliminar), etiquetes (reanomenar o fusionar, eliminar) i exportació de totes les dades a JSON.
+- **Editor**: ocupa tota la pantalla al mòbil. Avisa abans de descartar canvis i el botó enrere del mòbil el tanca. Ctrl+Enter desa. Si no hi ha títol, s'agafa la primera línia del text.
+- **Format del text**: `- [ ]` per a caselles (es poden marcar des de la targeta), `- ` i `1.` per a llistes, `#` per a títols, `>` per a cites, `**negreta**`, `` `codi` `` i enllaços clicables.
+- **Eliminar i arxivar** es poden desfer des del toast.
+- **Fora de línia**: el service worker deixa veure l'última còpia de les dades si el servidor no respon.
+- Dreceres d'escriptori: `N` crea una nota nova i `/` porta a la cerca.
 
 ## Estructura
 
-- `src/main.cpp`: servidor HTTP, repositori SQLite, validació i migració v1.
-- `third_party/httplib.h`: cpp-httplib 0.18.7 (MIT, https://github.com/yhirose/cpp-httplib).
-- `web/`: frontend responsive, icones SVG predefinides (carpeta, feina, casa, tecnologia, estrella, llibre, idea, gaming, futbol, barra de peses, alimentació, regals i gats).
-- `data/`: SQLite local (ignorada per Git); `build/`: artefactes (ignorats).
+- `src/main.cpp`: servidor HTTP, repositori SQLite, validació i migracions (v1 i v2).
+- `third_party/httplib.h`: cpp-httplib 0.18.7 (MIT).
+- `web/`: `index.html`, `style.css`, `js/` (mòduls ES: `app`, `api`, `ui`, `md`, `util`), `sw.js`, `manifest.webmanifest`, `icons/` i `fonts/` (Space Grotesk i JetBrains Mono, llicència OFL, allotjades localment).
+- `data/`: base de dades SQLite (ignorada per Git). `build/`: artefactes de compilació (ignorats). `backups/`: còpies locals (ignorades).
 
-## Instal·lació (Debian / Raspberry Pi OS)
+## Instal·lació (Debian / Ubuntu / Raspberry Pi OS)
+
+```sh
+sudo ./install-service.sh
+```
+
+L'script instal·la les dependències que falten, compila, crea el servei `notebox.service` (escolta a `127.0.0.1:8080` i arrenca amb l'ordinador) i el publica a la Tailnet amb `tailscale serve --bg --https=8447 http://127.0.0.1:8080`. Torna'l a executar després de canviar el codi. Els canvis que només afecten `web/` es veuen sense reiniciar res.
+
+Manualment:
 
 ```sh
 sudo apt-get install cmake g++ libsqlite3-dev nlohmann-json3-dev
-cmake -S . -B build
-cmake --build build -j1
-NOTEBOX_HOST=127.0.0.1 ./build/notebox
+cmake -S . -B build && cmake --build build -j"$(nproc)"
+./build/notebox            # NOTEBOX_HOST, NOTEBOX_PORT (8080), NOTEBOX_DATA (./data), NOTEBOX_WEB (./web)
 ```
 
-En una Raspberry Pi amb poca RAM, evita inicialment `Release -j2`: compilar nlohmann/json i cpp-httplib pot consumir molta memòria. Des de l'arrel del projecte obre `http://127.0.0.1:8080`. Variables: `NOTEBOX_HOST`, `NOTEBOX_PORT` (8080), `NOTEBOX_DATA` (`./data`), `NOTEBOX_WEB` (`./web`). Per Tailnet, vincula el servei **només a la IP Tailscale** (obtinguda amb `tailscale ip -4`):
+En una Raspberry Pi amb poca RAM, compila amb `-j1`.
 
-```sh
-NOTEBOX_HOST="$(tailscale ip -4)" ./build/notebox
-```
+Gestió del servei:
 
-Accedeix a `http://<MagicDNS-o-IP-Tailscale>:8080` des de dispositius autoritzats. Configura ACL de Tailscale per restringir el port; la xarxa privada no substitueix l'autenticació contra altres membres de la Tailnet. No facis servir `0.0.0.0` si només vols accés privat. Per HTTPS, considera Tailscale Serve. En aquesta Raspberry Pi hi ha `/etc/systemd/system/notebox.service`, habilitat amb `WorkingDirectory=/home/pi/workspace/notebox` i `NOTEBOX_HOST=100.125.179.24`. Usa `sudo systemctl restart notebox` després de recompilar i `sudo systemctl status notebox` per consultar-ne l'estat. Si canvia la IP Tailscale, actualitza `NOTEBOX_HOST` al servei, fes `sudo systemctl daemon-reload` i reinicia'l.
+- `sudo systemctl restart notebox`: reinicia el servei.
+- `sudo systemctl disable --now notebox`: l'atura i fa que no arrenqui amb l'ordinador.
+- `sudo systemctl enable --now notebox`: el torna a activar.
+- `tailscale serve --https=8447 off`: deixa de publicar-lo a la Tailnet.
+
+La PWA necessita HTTPS. Tailscale Serve ja el proporciona, així que es pot instal·lar des del navegador del mòbil amb «Afegeix a la pantalla d'inici».
 
 ## API
 
-`GET /api/notes` amb paràmetres combinables `date=YYYY-MM-DD`, `tag=nom`, `group=nom`, `pinned=true|false`, `has_date=true|false`, `search=paraules`, `sort=updated|created|date|title`; `GET /api/search` accepta els mateixos paràmetres. Resultat limitat a 200 notes per consulta en aquesta primera versió (paginació pendent).
+Totes les respostes són JSON. Les dates tenen el format `YYYY-MM-DD` i el client envia el seu `today` perquè els recordatoris segueixin la seva zona horària.
 
-`GET /api/notes/:id`, `POST /api/notes`, `PUT /api/notes/:id`, `DELETE /api/notes/:id`; `GET /api/tags`, `GET /api/groups`, `POST /api/groups`, `PUT /api/groups/:id` (nom i icona). PUT de notes reemplaça tots els camps editables. Tags a l'API són noms; els IDs reutilitzables es gestionen internament. Les dates són independents de pinned.
+| Mètode | Ruta | Descripció |
+|---|---|---|
+| GET | `/api/notes` | `{items,total}`. Filtres: `search` (prefix, tots els termes), `group` (id o `none`), `tag`, `pinned`, `done`, `has_date`, `date`, `from`, `to`, `archived=false\|true\|all` (per defecte `false`), `sort=updated\|created\|title\|date`, `limit` (≤200, per defecte 50), `offset` |
+| GET/PUT/PATCH/DELETE | `/api/notes/:id` | PUT reemplaça tots els camps; PATCH només canvia els camps enviats |
+| POST | `/api/notes` | `{title, description, date, group_id, pinned, done, archived, tags[]}` |
+| GET | `/api/agenda?today=&day=&from=&to=` | `{overdue, day, upcoming, days:{date:{total,pending}}}` |
+| GET | `/api/summary?today=` | Comptadors (`pending`, `overdue`, `today`, `upcoming`, `total`, `pinned`, `archived`, `ungrouped`) i grups i etiquetes amb el seu recompte |
+| GET/POST | `/api/groups` | `{name, icon}` |
+| PUT/DELETE | `/api/groups/:id` | Si elimines un grup, les seves notes queden sense grup |
+| GET | `/api/tags` | |
+| PUT/DELETE | `/api/tags/:id` | Reanomenar una etiqueta amb el nom d'una altra que ja existeix les fusiona |
+| GET | `/api/export` | Còpia completa en JSON |
 
 ```sh
 curl -X POST http://127.0.0.1:8080/api/notes -H 'Content-Type: application/json' \
-  -d '{"title":"Provar RS485","description":"Raspberry ethernet","date":null,"tags":["work","rs485"],"group_id":null,"pinned":false}'
-curl 'http://127.0.0.1:8080/api/notes?search=raspberry%20ethernet&tag=work'
+  -d '{"title":"Comprar","description":"- [ ] llet\n- [ ] pa","date":"2026-11-07","tags":["casa"]}'
+curl 'http://127.0.0.1:8080/api/notes?search=rasp&tag=feina'
 ```
 
-## Dades i evolució
+## Dades i migració
 
-La migració v1 és transaccional i es controla amb `PRAGMA user_version`. `notes`, `tags`, `note_tags`, `groups`; les claus externes són actives. FTS5 (`note_fts`) replica títol, descripció i tags amb triggers; els termes de cerca es combinen amb AND i poden coincidir en camps diferents. La cerca actual és literal per termes (sense prefix ni sintaxi avançada), ordenada per últim canvi; ranking, paginació i tokenització es poden ampliar. Per una migració v2, afegeix un bloc transaccional condicionat a `user_version == 1` i incrementa la versió. Fes còpia del fitxer SQLite amb l'API de backup de SQLite o `VACUUM INTO` (amb el servei aturat també pots copiar els fitxers WAL). Els attachments futurs haurien de tenir taula pròpia i fitxers optimitzats al disc; no inclosos en aquesta versió.
+L'esquema es versiona amb `PRAGMA user_version`. La v1 crea `notes`, `tags`, `note_tags`, `groups` i `note_fts` (FTS5 amb triggers). La v2 afegeix `done` i `archived`. Cada migració és transaccional. Les etiquetes que ja no fa servir cap nota s'eliminen soles. La base de dades fa servir `journal_mode=WAL` amb `synchronous=NORMAL`: en cas de tall de corrent es pot perdre l'última escriptura, però el fitxer no es corromp, i hi ha menys escriptures forçades a la SD.
 
-Els grups es poden crear i editar des de «Grups» a Totes les notes o des de l'editor; eliminar-los, l'autenticació, les imatges i el mode offline/PWA queden fora del MVP. El Daily accepta gestos horitzontals per canviar de dia (a més dels botons). Les notes noves no tenen data per defecte; «Aquest dia» l'assigna expressament i «Sense data» l'esborra.
+Per moure les dades a un altre dispositiu, copia `data/notebox.sqlite3` amb el servei aturat, o fes una còpia en calent:
+
+```sh
+sqlite3 data/notebox.sqlite3 ".backup /ruta/notebox.sqlite3"
+```
+
+El fitxer és portable entre arquitectures (ARM ↔ x86).

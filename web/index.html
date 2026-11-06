@@ -1,12 +1,288 @@
 <!doctype html>
-<html lang="ca"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#090e13"><title>Notebox</title><link rel="stylesheet" href="/style.css" defer></head>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#05080d">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Notes personals, recordatoris i idees.">
+<title>Notebox</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="preload" href="/fonts/space-grotesk-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+<script type="module" src="/js/app.js"></script>
+</head>
 <body>
-<svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="folder" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/></symbol><symbol id="briefcase" viewBox="0 0 24 24"><path d="M3 7h18v13H3zM9 7V4h6v3M3 13h18"/></symbol><symbol id="home" viewBox="0 0 24 24"><path d="m2 11 10-8 10 8M5 10v11h14V10M10 21v-7h4v7"/></symbol><symbol id="cpu" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9h6v6H9M9 2v3m6-3v3M9 19v3m6-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3"/></symbol><symbol id="star" viewBox="0 0 24 24"><path d="m12 2 3 7 7 .6-5.4 5 1.6 7.4-6.2-3.8-6.2 3.8 1.6-7.4-5.4-5L9 9z"/></symbol><symbol id="book" viewBox="0 0 24 24"><path d="M12 5C9 3 5 3 2 4v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1zm0 0v15"/></symbol><symbol id="lightbulb" viewBox="0 0 24 24"><path d="M8 16c0-2-3-4-3-7a7 7 0 0 1 14 0c0 3-3 5-3 7zM8 19h8m-6 3h4"/></symbol><symbol id="gaming" viewBox="0 0 24 24"><path d="M7 8h10a4 4 0 0 1 3.9 3.1l1 5a2.5 2.5 0 0 1-4 2.4L15 16H9l-2.9 2.5a2.5 2.5 0 0 1-4-2.4l1-5A4 4 0 0 1 7 8Z"/><path d="M7 10v5m-2.5-2.5h5M16.5 11.5h.01m2 2h.01"/></symbol><symbol id="football" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m12 7 4.5 3-1.7 5h-5.6l-1.7-5L12 7ZM9 2.5 12 7l3-4.5M3 7l4.5 3-3.6 3.5M7 20.5l2.2-5.5M17 20.5 14.8 15M20.1 13.5 16.5 10 21 7"/></symbol><symbol id="barbell" viewBox="0 0 24 24"><path d="M2 10v4m3-7v10m3-9v8m8-8v8m3-9v10m3-7v4M8 12h8"/></symbol><symbol id="food" viewBox="0 0 24 24"><path d="M3 2v7a3 3 0 0 0 6 0V2M6 2v20m9-20c-2 2-3 5-3 9v2h5V2zm2 11v9"/></symbol><symbol id="gift" viewBox="0 0 24 24"><rect x="3" y="10" width="18" height="12" rx="1"/><path d="M2 7h20v3H2zm10 0v15M12 7C7 7 5 5 6 3c1-2 5-1 6 4Zm0 0c5 0 7-2 6-4-1-2-5-1-6 4Z"/></symbol><symbol id="cat" viewBox="0 0 24 24"><path d="m3 10 1-7 5 3a10 10 0 0 1 6 0l5-3 1 7v4a9 9 0 0 1-18 0zM8 12h.01M16 12h.01m-5.5 4h3L12 18zM7 16l-5-1m5 3-5 1m15-3 5-1m-5 3 5 1"/></symbol></svg>
-<div class="layout"><aside class="sidebar"><h1>notebox<span>.</span></h1><nav aria-label="Vistes"><button class="nav active" data-view="daily">☀ &nbsp; Daily</button><button class="nav" data-view="all">☷ &nbsp; All notes</button></nav><p class="hint">Un lloc tranquil per a tot allò que vols recordar.</p></aside>
-<main><header class="top"><div class="mobile-brand">notebox<span>.</span></div><div id="page-title" class="eyebrow">DAILY</div><button id="new" class="primary">＋ Nova nota</button></header>
-<div id="daily-view" aria-label="Llisca a esquerra o dreta per canviar de dia"><div class="daybar"><button id="prev" aria-label="Dia anterior">‹</button><div><h2 id="day-label"></h2><button id="today" class="link">Avui</button></div><button id="next" aria-label="Dia següent">›</button></div><section><h3>✦ Fixades</h3><div id="pinned-list" class="cards"></div></section><section><h3 id="date-heading"></h3><div id="daily-list" class="cards"></div></section></div>
-<div id="all-view" hidden><div class="section-title"><h2>Totes les notes</h2><button type="button" id="manage-groups" class="secondary">⚙ Grups</button></div><label class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="Cerca títol, descripció o tags…" autocomplete="off"></label><div class="filters"><select id="tag-filter" aria-label="Filtra per tag"><option value="">Tots els tags</option></select><select id="group-filter" aria-label="Filtra per grup"><option value="">Tots els grups</option></select><input id="date-filter" type="date" aria-label="Filtra per data"><select id="has-date" aria-label="Filtra per presència de data"><option value="">Amb o sense data</option><option value="true">Amb data</option><option value="false">Sense data</option></select><label class="check"><input type="checkbox" id="pinned-filter"> Fixades</label><select id="sort" aria-label="Ordena"><option value="updated">Última edició</option><option value="created">Creació</option><option value="date">Data</option><option value="title">Títol</option></select></div><div id="all-list" class="cards"></div></div>
-</main><button type="button" id="quick-new" class="quick-new" aria-label="Crea una nota" title="Crea una nota">＋<span>Nova nota</span></button><nav class="bottom" aria-label="Vistes mòbil"><button class="nav active" data-view="daily">☀<small>Daily</small></button><button class="nav" data-view="all">☷<small>Totes</small></button></nav></div>
-<dialog id="editor"><form id="note-form"><div class="dialog-head"><h2 id="editor-title">Nova nota</h2><button type="button" id="close" class="icon-btn" aria-label="Tanca">×</button></div><label>Títol *<input id="title" maxlength="500" required placeholder="Què tens al cap?"></label><label>Descripció<textarea id="description" rows="5" placeholder="Afegeix els detalls…"></textarea></label><div class="two"><div class="date-field"><label>Data (opcional)<input id="note-date" type="date"></label><div class="date-actions"><button type="button" id="set-day" class="text-btn">Aquest dia</button><button type="button" id="clear-date" class="text-btn">Sense data ×</button></div></div><div class="group-field"><label>Grup (opcional)<select id="note-group"><option value="">Sense grup</option></select></label><button type="button" id="edit-groups" class="text-btn">Gestiona els grups</button></div></div><label>Tags (separats per comes)<input id="note-tags" list="tag-suggestions" placeholder="idea, feina…"><datalist id="tag-suggestions"></datalist></label><label class="check"><input id="note-pinned" type="checkbox"> Fixa aquesta nota</label><div class="actions"><button type="button" id="delete" class="danger" hidden>Elimina</button><button type="submit" class="primary">Desa la nota</button></div><p id="form-error" class="error" role="alert"></p></form></dialog>
-<dialog id="group-dialog"><form id="group-form"><div class="dialog-head"><h2 id="group-title">Grups</h2><button type="button" id="close-group" class="icon-btn" aria-label="Tanca">×</button></div><div id="group-list" class="group-list" aria-label="Grups existents"></div><h3 id="group-form-title">Crea un grup</h3><label>Nom<input id="group-name" maxlength="100" required></label><label>Icona<div class="icon-picker"><span id="icon-preview" aria-hidden="true"></span><select id="group-icon"><option value="folder">Carpeta</option><option value="briefcase">Feina</option><option value="home">Casa</option><option value="cpu">Tecnologia</option><option value="star">Estrella</option><option value="book">Llibre</option><option value="lightbulb">Idea</option><option value="gaming">Gaming</option><option value="football">Pilota de futbol</option><option value="barbell">Barra de peses</option><option value="food">Alimentació</option><option value="gift">Regals</option><option value="cat">Gats</option></select></div></label><div class="actions"><button type="button" id="cancel-group" class="secondary" hidden>Cancel·la</button><button class="primary" id="save-group" type="submit">Crea el grup</button></div><p id="group-error" class="error" role="alert"></p></form></dialog>
-<script src="/app.js" defer></script></body></html>
+<svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <!-- Interface -->
+  <symbol id="i-logo" viewBox="0 0 24 24"><path d="M12 2.2 20.5 7v10L12 21.8 3.5 17V7z"/><path d="M8.2 9.6h7.6M8.2 12.4h7.6M8.2 15.2h4.4"/></symbol>
+  <symbol id="i-notes" viewBox="0 0 24 24"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h4.5"/></symbol>
+  <symbol id="i-agenda" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M16 2.5v4M8 2.5v4M3.5 10h17M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></symbol>
+  <symbol id="i-explore" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.2"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.2"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8.5a6 6 0 0 0-12 0c0 6.5-2.5 8.5-2.5 8.5h17S18 15 18 8.5M13.7 20.5a2 2 0 0 1-3.4 0"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6.5h9M17 6.5h3M4 12h3M11 12h9M4 17.5h11M19 17.5h1"/><circle cx="15" cy="6.5" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17.5" r="2"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 16.5V22M8.5 3h7l-1 5.5 3.5 3.5v2.5H6V12l3.5-3.5z"/></symbol>
+  <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3" y="3.5" width="18" height="4.5" rx="1"/><path d="M5 8v11.5A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8M10 12h4"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3.5 6.5h17M9 6.5V4h6v2.5M6 6.5l1 14h10l1-14M10 11v6M14 11v6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6.5 9.5 17 4 11.5"/></symbol>
+  <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><path d="M7.5 7.5h.01"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h8.5M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-checkbox" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="m8 12 3 3 5-6"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
+  <symbol id="i-heading" viewBox="0 0 24 24"><path d="M6 4.5v15M17 4.5v15M6 12h11"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 9v4.5M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
+  <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-signal" viewBox="0 0 24 24"><path d="M2 12h3l2.5-6 4 12 3-9 2 3H22"/></symbol>
+  <!-- Group icons -->
+  <symbol id="g-folder" viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H10l2 2.5h7.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/></symbol>
+  <symbol id="g-briefcase" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="1.5"/><path d="M9 7V4.5h6V7M3 13h18"/></symbol>
+  <symbol id="g-home" viewBox="0 0 24 24"><path d="m2.5 11 9.5-7.5 9.5 7.5M5 9.5V20h14V9.5M10 20v-6h4v6"/></symbol>
+  <symbol id="g-cpu" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9h6v6H9zM9 2v3m6-3v3M9 19v3m6-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3"/></symbol>
+  <symbol id="g-star" viewBox="0 0 24 24"><path d="m12 2.5 2.9 6.2 6.6.7-5 4.5 1.4 6.6L12 17.2l-5.9 3.3 1.4-6.6-5-4.5 6.6-.7z"/></symbol>
+  <symbol id="g-book" viewBox="0 0 24 24"><path d="M12 5.5C9 3.5 5 3.5 2.5 4.5v14.5C5 18 9 18 12 20c3-2 7-2 9.5-1V4.5C19 3.5 15 3.5 12 5.5zm0 0V20"/></symbol>
+  <symbol id="g-lightbulb" viewBox="0 0 24 24"><path d="M8.5 15.5c0-2-3-3.8-3-7a6.5 6.5 0 0 1 13 0c0 3.2-3 5-3 7zM8.5 18.5h7M10 21.5h4"/></symbol>
+  <symbol id="g-gaming" viewBox="0 0 24 24"><path d="M7 8h10a4 4 0 0 1 3.9 3.1l1 5a2.5 2.5 0 0 1-4 2.4L15 16H9l-2.9 2.5a2.5 2.5 0 0 1-4-2.4l1-5A4 4 0 0 1 7 8Z"/><path d="M7 10.5v4m-2-2h4M16.5 11.5h.01m2 2h.01"/></symbol>
+  <symbol id="g-football" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="m12 7.5 4.3 3-1.6 4.8H9.3l-1.6-4.8z"/><path d="M12 2.5v5M16.3 10.5l4.6-1.7M14.7 15.3l2.8 4.2M9.3 15.3l-2.8 4.2M7.7 10.5 3.1 8.8"/></symbol>
+  <symbol id="g-barbell" viewBox="0 0 24 24"><path d="M2 10v4m3-7v10m3-9v8m8-8v8m3-9v10m3-7v4M8 12h8"/></symbol>
+  <symbol id="g-food" viewBox="0 0 24 24"><path d="M4 2.5v6.5a3 3 0 0 0 6 0V2.5M7 2.5v19M15 15.5V2.5c2.5 0 5 2.5 5 7v6zm2.5 0v6"/></symbol>
+  <symbol id="g-gift" viewBox="0 0 24 24"><rect x="3.5" y="10" width="17" height="11" rx="1"/><path d="M2.5 7h19v3h-19zM12 7v14M12 7C7.5 7 6 5 7 3.5S11 2.5 12 7Zm0 0c4.5 0 6-2 5-3.5S13 2.5 12 7Z"/></symbol>
+  <symbol id="g-cat" viewBox="0 0 24 24"><path d="m4 10.5 1-7 4.5 3a9.5 9.5 0 0 1 5 0l4.5-3 1 7V14a8 8 0 0 1-16 0zM9 12.5h.01M15 12.5h.01M11 16h2l-1 1.2z"/></symbol>
+  <symbol id="g-heart" viewBox="0 0 24 24"><path d="M20.4 5.1a5.2 5.2 0 0 0-7.4 0L12 6.1l-1-1a5.2 5.2 0 0 0-7.4 7.4l1 1L12 20.9l7.4-7.4 1-1a5.2 5.2 0 0 0 0-7.4z"/></symbol>
+  <symbol id="g-plane" viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></symbol>
+  <symbol id="g-music" viewBox="0 0 24 24"><path d="M9 18V5.5l11-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
+  <symbol id="g-wallet" viewBox="0 0 24 24"><path d="M19 7V5.5A1.5 1.5 0 0 0 17.5 4h-12A2.5 2.5 0 0 0 3 6.5v11A2.5 2.5 0 0 0 5.5 20h14a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 19.5 7H5.5A2.5 2.5 0 0 1 3 4.5"/><path d="M16.5 13.5h.01"/></symbol>
+  <symbol id="g-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6M14 4l-4 16"/></symbol>
+  <symbol id="g-users" viewBox="0 0 24 24"><path d="M16 21v-1.5a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4V21"/><circle cx="9" cy="7.5" r="4"/><path d="M22 21v-1.5a4 4 0 0 0-3-3.9M16 3.6a4 4 0 0 1 0 7.8"/></symbol>
+  <symbol id="g-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10z"/><path d="M2 21c0-3 1.9-5.4 5.1-6"/></symbol>
+  <symbol id="g-camera" viewBox="0 0 24 24"><path d="M21.5 18.5A1.5 1.5 0 0 1 20 20H4a1.5 1.5 0 0 1-1.5-1.5v-10A1.5 1.5 0 0 1 4 7h3.5l2-3h5l2 3H20a1.5 1.5 0 0 1 1.5 1.5z"/><circle cx="12" cy="13" r="3.8"/></symbol>
+  <symbol id="g-car" viewBox="0 0 24 24"><path d="M3 17v-5l2.2-5.2A1.5 1.5 0 0 1 6.6 6h10.8a1.5 1.5 0 0 1 1.4.8L21 12v5h-2M3 17h2m4 0h6M3 12h18"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></symbol>
+  <symbol id="g-school" viewBox="0 0 24 24"><path d="M22 9.5 12 4.5 2 9.5l10 5zM6 11.5v5c3 2.5 9 2.5 12 0v-5M22 9.5V15"/></symbol>
+  <symbol id="g-health" viewBox="0 0 24 24"><path d="M22 12h-4l-3 8.5L9 3.5 6 12H2"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="sidebar" aria-label="Navegació">
+    <a class="brand" href="#notes"><svg class="ico logo"><use href="#i-logo"/></svg><span>NOTEBOX</span></a>
+    <button type="button" class="btn primary block" data-action="new"><svg class="ico"><use href="#i-plus"/></svg>Nova nota<kbd>N</kbd></button>
+    <nav class="side-nav">
+      <a href="#notes" class="side-link" data-view="notes"><svg class="ico"><use href="#i-notes"/></svg><span>Notes</span><b class="count" data-count="total"></b></a>
+      <a href="#agenda" class="side-link" data-view="agenda"><svg class="ico"><use href="#i-agenda"/></svg><span>Agenda</span><b class="badge" data-badge hidden></b></a>
+      <a href="#explore" class="side-link" data-view="explore"><svg class="ico"><use href="#i-explore"/></svg><span>Explora</span></a>
+    </nav>
+    <div class="side-section">
+      <h4 class="label">Grups</h4>
+      <div id="side-groups" class="side-groups"></div>
+    </div>
+    <div class="side-section">
+      <h4 class="label">Etiquetes</h4>
+      <div id="side-tags" class="tag-cloud compact"></div>
+    </div>
+    <footer class="side-foot mono">
+      <span class="net"><i class="led" data-net></i><span data-net-label>EN LÍNIA</span></span>
+      <span id="clock"></span>
+    </footer>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <a class="brand mobile-only" href="#notes"><svg class="ico logo"><use href="#i-logo"/></svg><span>NOTEBOX</span><i class="led" data-net></i></a>
+      <h1 class="view-title desktop-only" id="view-title">Notes</h1>
+      <div class="top-actions">
+        <button type="button" class="icon-btn bell" id="bell" aria-label="Recordatoris pendents"><svg class="ico"><use href="#i-bell"/></svg><b class="badge" data-badge hidden></b></button>
+      </div>
+    </header>
+
+    <main id="content">
+      <section id="view-notes" class="view" aria-label="Notes">
+        <button type="button" id="reminder-alert" class="alert-strip" hidden>
+          <i class="pulse"></i>
+          <span class="alert-text"><strong id="alert-title"></strong><small id="alert-sub"></small></span>
+          <span class="alert-go mono">AGENDA <svg class="ico"><use href="#i-arrow-r"/></svg></span>
+        </button>
+        <div class="search-bar">
+          <label class="search">
+            <svg class="ico"><use href="#i-search"/></svg>
+            <input id="search" type="search" placeholder="Cerca a totes les notes…" autocomplete="off" enterkeyhint="search" aria-label="Cerca">
+            <button type="button" id="search-clear" class="clear" aria-label="Esborra la cerca" hidden><svg class="ico"><use href="#i-x"/></svg></button>
+          </label>
+          <button type="button" class="icon-btn filter-btn" id="open-filters" aria-label="Filtres"><svg class="ico"><use href="#i-filter"/></svg><b class="badge cyan" id="filter-count" hidden></b></button>
+        </div>
+        <div class="chip-scroll" id="group-chips" role="toolbar" aria-label="Grups"></div>
+        <div class="active-filters" id="active-filters"></div>
+        <div id="notes-body"></div>
+      </section>
+
+      <section id="view-agenda" class="view" aria-label="Agenda" hidden>
+        <div class="agenda-head">
+          <button type="button" class="icon-btn" id="week-prev" aria-label="Setmana anterior"><svg class="ico"><use href="#i-chev-l"/></svg></button>
+          <div class="month mono" id="month-label"></div>
+          <button type="button" class="icon-btn" id="week-next" aria-label="Setmana següent"><svg class="ico"><use href="#i-chev-r"/></svg></button>
+          <button type="button" class="btn ghost sm" id="go-today">Avui</button>
+        </div>
+        <div class="week" id="week" role="listbox" aria-label="Dies de la setmana"></div>
+        <div id="agenda-body" class="agenda-body"></div>
+      </section>
+
+      <section id="view-explore" class="view" aria-label="Explora" hidden>
+        <div class="stats" id="stats"></div>
+        <section class="block">
+          <header class="sec-head"><h2 class="label">Grups</h2><button type="button" class="btn ghost sm" id="new-group"><svg class="ico"><use href="#i-plus"/></svg>Nou grup</button></header>
+          <div class="group-grid" id="group-grid"></div>
+        </section>
+        <section class="block">
+          <header class="sec-head"><h2 class="label">Etiquetes</h2><button type="button" class="btn ghost sm" id="toggle-tag-edit" aria-pressed="false"><svg class="ico"><use href="#i-edit"/></svg><span>Gestiona</span></button></header>
+          <div class="tag-cloud" id="tag-cloud"></div>
+        </section>
+        <section class="block">
+          <header class="sec-head"><h2 class="label">Dades</h2></header>
+          <div class="data-actions">
+            <a class="btn ghost sm" href="/api/export" download><svg class="ico"><use href="#i-archive"/></svg>Exporta còpia (JSON)</a>
+          </div>
+          <p class="hint">Inclou totes les notes (també les arxivades), grups i etiquetes.</p>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <nav class="tabbar" aria-label="Navegació">
+    <a href="#notes" class="tab" data-view="notes"><svg class="ico"><use href="#i-notes"/></svg><span>Notes</span></a>
+    <a href="#agenda" class="tab" data-view="agenda"><svg class="ico"><use href="#i-agenda"/></svg><span>Agenda</span><b class="badge" data-badge hidden></b></a>
+    <button type="button" class="fab" data-action="new" aria-label="Nova nota"><svg class="ico"><use href="#i-plus"/></svg></button>
+    <a href="#explore" class="tab" data-view="explore"><svg class="ico"><use href="#i-explore"/></svg><span>Explora</span></a>
+    <button type="button" class="tab" data-action="search"><svg class="ico"><use href="#i-search"/></svg><span>Cerca</span></button>
+  </nav>
+</div>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<dialog id="editor" class="editor" aria-labelledby="editor-heading">
+  <form id="note-form" novalidate>
+    <header class="editor-head">
+      <button type="button" class="icon-btn" data-close aria-label="Tanca"><svg class="ico"><use href="#i-back"/></svg></button>
+      <span class="editor-heading mono" id="editor-heading">NOVA NOTA</span>
+      <div class="editor-tools">
+        <button type="button" class="icon-btn toggle" id="ed-pin" aria-pressed="false" aria-label="Fixa la nota" title="Fixa"><svg class="ico"><use href="#i-pin"/></svg></button>
+        <button type="button" class="icon-btn" id="ed-archive" aria-label="Arxiva" title="Arxiva" hidden><svg class="ico"><use href="#i-archive"/></svg></button>
+        <button type="button" class="icon-btn danger" id="ed-delete" aria-label="Elimina" title="Elimina" hidden><svg class="ico"><use href="#i-trash"/></svg></button>
+      </div>
+    </header>
+    <div class="editor-scroll">
+      <input id="ed-title" class="ed-title" placeholder="Títol" maxlength="500" autocomplete="off" enterkeyhint="next" aria-label="Títol">
+      <p class="ed-stamp mono" id="ed-stamp"></p>
+      <div class="ed-tabs" role="tablist">
+        <button type="button" role="tab" class="active" data-mode="edit" aria-selected="true">Escriu</button>
+        <button type="button" role="tab" data-mode="preview" aria-selected="false">Vista prèvia</button>
+      </div>
+      <textarea id="ed-body" class="ed-body" placeholder="Escriu aquí…&#10;- [ ] Una casella&#10;- Un element de llista" aria-label="Contingut"></textarea>
+      <div id="ed-preview" class="md ed-preview" hidden></div>
+
+      <div class="ed-props">
+        <div class="prop">
+          <div class="prop-label label"><svg class="ico"><use href="#i-clock"/></svg>Recordatori</div>
+          <div class="chip-wrap" id="ed-date-chips"></div>
+          <div class="date-line" id="ed-date-line">
+            <input type="date" id="ed-date" aria-label="Data del recordatori">
+            <span class="date-human" id="ed-date-label"></span>
+            <label class="check-pill" id="ed-done-wrap"><input type="checkbox" id="ed-done"><span><svg class="ico"><use href="#i-check"/></svg>Fet</span></label>
+          </div>
+        </div>
+        <div class="prop">
+          <div class="prop-label label"><svg class="ico"><use href="#g-folder"/></svg>Grup</div>
+          <div class="chip-wrap" id="ed-groups"></div>
+          <div class="inline-form" id="ed-new-group" hidden>
+            <input id="ed-new-group-name" maxlength="100" placeholder="Nom del grup nou" aria-label="Nom del grup nou">
+            <div class="icon-grid" id="ed-new-group-icons" role="radiogroup" aria-label="Icona"></div>
+            <div class="row end">
+              <button type="button" class="btn ghost sm" id="ed-new-group-cancel">Cancel·la</button>
+              <button type="button" class="btn primary sm" id="ed-new-group-save">Crea el grup</button>
+            </div>
+          </div>
+        </div>
+        <div class="prop">
+          <div class="prop-label label"><svg class="ico"><use href="#i-tag"/></svg>Etiquetes</div>
+          <div class="tag-input" id="ed-tags">
+            <input id="ed-tag-input" placeholder="Afegeix i prem Enter…" autocomplete="off" enterkeyhint="done" aria-label="Afegeix una etiqueta">
+          </div>
+          <div class="chip-wrap suggest" id="ed-tag-suggest"></div>
+        </div>
+      </div>
+    </div>
+    <footer class="editor-foot">
+      <div class="fmt" role="toolbar" aria-label="Format">
+        <button type="button" class="icon-btn" data-fmt="task" title="Casella" aria-label="Insereix una casella"><svg class="ico"><use href="#i-checkbox"/></svg></button>
+        <button type="button" class="icon-btn" data-fmt="list" title="Llista" aria-label="Insereix un element de llista"><svg class="ico"><use href="#i-list"/></svg></button>
+        <button type="button" class="icon-btn" data-fmt="heading" title="Títol de secció" aria-label="Insereix un títol de secció"><svg class="ico"><use href="#i-heading"/></svg></button>
+      </div>
+      <p class="form-error" id="ed-error" role="alert"></p>
+      <button type="submit" class="btn primary" id="ed-save"><span>Desa</span><kbd class="desktop-only">Ctrl ↵</kbd></button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog id="filters" class="sheet" aria-labelledby="filters-title">
+  <div class="sheet-inner">
+    <header class="sheet-head"><h2 id="filters-title">Filtres</h2><button type="button" class="icon-btn" data-close aria-label="Tanca"><svg class="ico"><use href="#i-x"/></svg></button></header>
+    <div class="field"><span class="label">Etiqueta</span><div class="chip-wrap" id="f-tags"></div></div>
+    <div class="field"><span class="label">Recordatori</span><div class="segmented" data-filter="hasDate">
+      <button type="button" data-value="">Tots</button><button type="button" data-value="true">Amb data</button><button type="button" data-value="false">Sense data</button></div></div>
+    <div class="field"><span class="label">Estat</span><div class="segmented" data-filter="archived">
+      <button type="button" data-value="false">Actives</button><button type="button" data-value="true">Arxivades</button><button type="button" data-value="all">Totes</button></div></div>
+    <div class="field"><span class="label">Ordena per</span><div class="segmented" data-filter="sort">
+      <button type="button" data-value="updated">Edició</button><button type="button" data-value="created">Creació</button><button type="button" data-value="title">Títol</button><button type="button" data-value="date">Data</button></div></div>
+    <div class="row between">
+      <button type="button" class="btn ghost" id="f-reset">Neteja els filtres</button>
+      <button type="button" class="btn primary" data-close>Fet</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="group-dialog" class="sheet" aria-labelledby="group-title">
+  <form class="sheet-inner" id="group-form" novalidate>
+    <header class="sheet-head"><h2 id="group-title">Nou grup</h2><button type="button" class="icon-btn" data-close aria-label="Tanca"><svg class="ico"><use href="#i-x"/></svg></button></header>
+    <label class="field"><span class="label">Nom</span><input id="group-name" class="input" maxlength="100" required autocomplete="off"></label>
+    <div class="field"><span class="label">Icona</span><div class="icon-grid" id="group-icons" role="radiogroup" aria-label="Icona"></div></div>
+    <p class="form-error" id="group-error" role="alert"></p>
+    <div class="row between">
+      <button type="button" class="btn danger-ghost" id="group-delete" hidden><svg class="ico"><use href="#i-trash"/></svg>Elimina</button>
+      <button type="submit" class="btn primary" id="group-save">Crea el grup</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="tag-dialog" class="sheet" aria-labelledby="tag-title">
+  <form class="sheet-inner" id="tag-form" novalidate>
+    <header class="sheet-head"><h2 id="tag-title">Etiqueta</h2><button type="button" class="icon-btn" data-close aria-label="Tanca"><svg class="ico"><use href="#i-x"/></svg></button></header>
+    <label class="field"><span class="label">Nom</span><input id="tag-name" class="input" maxlength="60" required autocomplete="off"></label>
+    <p class="hint">Si poses el nom d'una etiqueta que ja existeix, les dues es fusionaran.</p>
+    <p class="form-error" id="tag-error" role="alert"></p>
+    <div class="row between">
+      <button type="button" class="btn danger-ghost" id="tag-delete"><svg class="ico"><use href="#i-trash"/></svg>Elimina</button>
+      <button type="submit" class="btn primary">Desa</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="confirm" class="alert-dialog" aria-labelledby="confirm-title">
+  <div class="sheet-inner">
+    <h2 id="confirm-title"></h2>
+    <p id="confirm-text"></p>
+    <div class="row end">
+      <button type="button" class="btn ghost" id="confirm-no">Cancel·la</button>
+      <button type="button" class="btn primary" id="confirm-yes">D'acord</button>
+    </div>
+  </div>
+</dialog>
+</body>
+</html>
