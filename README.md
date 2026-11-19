@@ -13,13 +13,14 @@
 
 ---
 
-Notebox is a mobile-first notes app served by a single C++17 executable. The backend is ~500 lines of plain C++ on top of [cpp-httplib](https://github.com/yhirose/cpp-httplib), [nlohmann/json](https://github.com/nlohmann/json) and SQLite. The frontend is vanilla HTML/CSS/JS, installable as a PWA.
+Notebox is a mobile-first notes app served by a single C++17 executable. The backend is ~500 lines of plain C++ on top of [cpp-httplib](https://github.com/yhirose/cpp-httplib), [nlohmann/json](https://github.com/nlohmann/json) and SQLite. The frontend is vanilla HTML/CSS/JS, installable as a PWA, with [marked](https://marked.js.org), [DOMPurify](https://github.com/cure53/DOMPurify) and Mermaid vendored in `web/vendor/`.
 
 ## Features
 
 - **Instant search**: SQLite FTS5 full-text search with prefix matching as you type.
 - **Agenda**: dated notes become reminders, with a weekly strip, overdue and upcoming lists.
-- **Markdown-lite**: checklists, lists, headings, quotes, bold, code and links.
+- **Markdown**: full GitHub-flavoured Markdown (tables, code blocks, images, raw HTML sanitized with DOMPurify), clickable checklists and [Mermaid](https://mermaid.js.org) diagrams in ```` ```mermaid ```` blocks.
+- **Links between notes**: `[[Note title]]`, `[[Note title#Heading]]`, `[[#Heading]]`, `[[Title|label]]`, or standard `[label](<Note title.md#heading>)`.
 - **Offline-ready**: a service worker keeps the last snapshot available when the server is down.
 
 ## Build

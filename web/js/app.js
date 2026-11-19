@@ -1,5 +1,5 @@
 import { api, onNetwork } from './api.js';
-import { render as renderMd, setTask, taskStats, listContinuation } from './md.js';
+import { render as renderMd, setTask, taskStats, listContinuation, scrollToHeading } from './md.js';
 import { toast, confirmDialog, openModal, closeModal, setGuard, onModalClose, isOpen, wireDialog } from './ui.js';
 import {
   $, el, icon, groupIcon, GROUP_ICONS, todayISO, addDays, startOfWeek, daysBetween, nextWeekday, parseISO,
@@ -235,7 +235,11 @@ function card(note) {
   node.append(el('div', { class: 'card-top' }, note.group_icon ? groupIcon(note.group_icon, 'ico gico') : null,
     el('h3', { class: 'card-title', text: note.title }), flags));
   if (note.description.trim()) {
-    const md = renderMd(note.description, { maxBlocks: 9, onToggle: (line, checked) => toggleTaskInNote(note, line, checked) });
+    const md = renderMd(note.description, {
+      maxBlocks: 9, diagrams: false, localAnchors: false,
+      onToggle: (pos, checked) => toggleTaskInNote(note, pos, checked),
+      onLink: link => followLink(link, note),
+    });
     node.append(el('div', { class: 'card-body' + (long ? ' fade' : '') }, md));
   }
   if (stats.total) {
@@ -252,9 +256,9 @@ function card(note) {
   return node;
 }
 
-async function toggleTaskInNote(note, line, checked) {
+async function toggleTaskInNote(note, pos, checked) {
   const before = note.description;
-  note.description = setTask(before, line, checked);
+  note.description = setTask(before, pos, checked);
   rerenderCurrent();
   try {
     const saved = await api(`/api/notes/${note.id}`, { method: 'PATCH', body: { description: note.description } });
@@ -264,6 +268,40 @@ async function toggleTaskInNote(note, line, checked) {
     rerenderCurrent();
     reportError(err);
   }
+}
+
+/* Links between notes: [[Títol#Secció]] or [text](Títol.md#secció); an empty title means the note itself. */
+async function findNoteByTitle(title) {
+  const exact = await api(`/api/notes?archived=all&limit=1&title=${encodeURIComponent(title)}`);
+  if (exact.items.length) return exact.items[0];
+  // SQLite NOCASE only folds ASCII: fall back to a search and compare accent/case-insensitively.
+  const norm = s => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
+  const res = await api(`/api/notes?archived=all&limit=200&search=${encodeURIComponent(title)}`);
+  return res.items.find(n => norm(n.title) === norm(title)) || null;
+}
+
+async function followLink({ note: title, anchor }, from) {
+  let target = from;
+  if (title) {
+    try { target = await findNoteByTitle(title); } catch (err) { reportError(err); return; }
+    if (!target) {
+      toast(`No hi ha cap nota «${title.slice(0, 40)}»`, { type: 'warn', action: { label: 'Crea-la', fn: () => switchEditor(null, { title }) } });
+      return;
+    }
+  }
+  if (!target) return;
+  if (!(await switchEditor(target))) return;
+  if (anchor && !scrollToHeading($('ed-preview'), anchor)) toast(`No s’ha trobat la secció «${anchor.slice(0, 40)}»`, { type: 'warn' });
+}
+
+/** Open a note in the editor, asking first if the one already open has unsaved changes. */
+async function switchEditor(note, opts) {
+  if (isOpen($('editor'))) {
+    if (note && ed.note?.id === note.id) { setEditorMode('preview'); return true; }
+    if (editorDirty() && !(await confirmDialog({ title: 'Vols descartar els canvis?', text: 'Tens canvis sense desar en aquesta nota.', yes: 'Descarta', no: 'Continua editant', danger: true }))) return false;
+  }
+  openEditor(note, opts);
+  return true;
 }
 
 function rerenderCurrent() {
@@ -481,7 +519,7 @@ function editorSnapshot() {
 }
 const editorDirty = () => editorSnapshot() !== ed.initial;
 
-function openEditor(note = null, { date = null } = {}) {
+function openEditor(note = null, { date = null, title = '' } = {}) {
   ed.note = note;
   ed.tags = note ? [...note.tags] : [];
   ed.groupId = note?.group_id ?? (!note && state.view === 'notes' && /^\d+$/.test(state.filters.group) ? Number(state.filters.group) : null);
@@ -489,7 +527,7 @@ function openEditor(note = null, { date = null } = {}) {
   ed.pinned = !!note?.pinned;
   ed.archived = !!note?.archived;
   $('editor-heading').textContent = note ? (note.archived ? 'NOTA ARXIVADA' : 'EDITA LA NOTA') : (date ? 'NOU RECORDATORI' : 'NOVA NOTA');
-  $('ed-title').value = note?.title || '';
+  $('ed-title').value = note?.title || title;
   $('ed-body').value = note?.description || '';
   $('ed-date').value = note?.date || date || '';
   $('ed-done').checked = !!note?.done;
@@ -499,7 +537,7 @@ function openEditor(note = null, { date = null } = {}) {
   $('ed-archive').hidden = $('ed-delete').hidden = !note;
   { const label = ed.archived ? 'Desarxiva' : 'Arxiva'; $('ed-archive').title = label; $('ed-archive').setAttribute('aria-label', label); }
   $('ed-new-group').hidden = true;
-  setEditorMode('edit');
+  setEditorMode(note?.description.trim() ? 'preview' : 'edit');
   syncPin();
   renderDateProp();
   renderGroupProp();
@@ -509,7 +547,7 @@ function openEditor(note = null, { date = null } = {}) {
   autosize();
   ed.initial = editorSnapshot();
   $('editor').querySelector('.editor-scroll').scrollTop = 0;
-  if (!note) $('ed-title').focus();
+  if (!note) (title ? $('ed-body') : $('ed-title')).focus();
 }
 
 function syncPin() {
@@ -527,7 +565,10 @@ function setEditorMode(mode) {
 
 function renderPreview() {
   const text = $('ed-body').value;
-  $('ed-preview').replaceChildren(text.trim() ? renderMd(text, { onToggle: (line, checked) => { $('ed-body').value = setTask($('ed-body').value, line, checked); renderPreview(); } })
+  $('ed-preview').replaceChildren(text.trim() ? renderMd(text, {
+    onToggle: (pos, checked) => { $('ed-body').value = setTask($('ed-body').value, pos, checked); renderPreview(); },
+    onLink: link => followLink(link, ed.note),
+  })
     : el('p', { class: 'hint', text: 'Res a mostrar encara.' }));
 }
 
