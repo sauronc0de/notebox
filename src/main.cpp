@@ -242,6 +242,7 @@ public:
             if (param("group") == "none") where += " AND n.group_id IS NULL";
             else { where += " AND n.group_id=?"; binds.push_back(Bind::of(parseInt(param("group"), "group filter"))); }
         }
+        if (has("title")) { where += " AND n.title=? COLLATE NOCASE"; binds.push_back(Bind::of(param("title"))); }
         if (has("pinned")) { where += " AND n.pinned=?"; binds.push_back(Bind::of(parseBool(param("pinned"), "pinned filter") ? 1 : 0)); }
         if (has("done")) { where += " AND n.done=?"; binds.push_back(Bind::of(parseBool(param("done"), "done filter") ? 1 : 0)); }
         if (has("has_date")) where += parseBool(param("has_date"), "has_date filter") ? " AND n.date IS NOT NULL" : " AND n.date IS NULL";
@@ -479,7 +480,8 @@ int main() {
         server.set_default_headers({
             {"X-Content-Type-Options", "nosniff"},
             {"Referrer-Policy", "no-referrer"},
-            {"Content-Security-Policy", "default-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"}});
+            {"Content-Security-Policy", "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; "
+             "object-src 'none'; base-uri 'none'; frame-ancestors 'none'"}});
         server.set_file_extension_and_mimetype_mapping("webmanifest", "application/manifest+json");
         auto send = [](httplib::Response &res, const json &j, int status = 200) {
             res.status = status;
